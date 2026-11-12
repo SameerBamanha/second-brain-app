@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Second Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="boot" id="boot"><pre id="bootText"></pre></div>
+
+<div class="signin" id="signin" hidden>
+  <form class="panel" id="signinForm" autocomplete="off" novalidate>
+    <div class="ph"><span>Connect to GitHub</span><span>PRIVATE</span></div>
+    <div class="pb form">
+      <p class="si-lead">Your memory stays in your private repo. This page reads and writes it straight from your browser with a token only you hold.</p>
+      <label>Repository<input name="repo" placeholder="owner/second-brain" autocapitalize="off" spellcheck="false"></label>
+      <label>Token<input name="token" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false"></label>
+      <label class="check"><input type="checkbox" name="remember" checked> Stay signed in on this device</label>
+      <p class="err" id="siErr" role="alert"></p>
+      <button type="submit" class="btn primary">Connect</button>
+      <details class="si-help">
+        <summary>How to make a token</summary>
+        <ol>
+          <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub → Fine-grained tokens → Generate new token</a>.</li>
+          <li>Repository access: <b>Only select repositories</b>, then pick your second-brain repo.</li>
+          <li>Permissions → Repository → <b>Contents: Read and write</b> (Read-only works if you only want to view). Nothing else.</li>
+          <li>Choose an expiry, generate it, and paste it here.</li>
+        </ol>
+        <p>The token is kept only in this browser and is sent only to api.github.com.</p>
+      </details>
+    </div>
+  </form>
+</div>
+
+<div class="app">
+  <header>
+    <a class="brand" href="#/">
+      <div class="reactor"></div>
+      <div><h1 id="brandName">SECOND BRAIN</h1><small>SECOND BRAIN</small></div>
+    </a>
+    <label class="search"><input id="q" type="search" placeholder="Query memory…" autocomplete="off" aria-label="Search memory"></label>
+    <div class="tools">
+      <button class="btn primary" id="addBtn">+ Memory</button>
+      <button class="btn sync" id="syncBtn" title="Commit, pull and push to GitHub"><span id="syncLabel">Sync</span></button>
+      <button class="btn" id="signOutBtn" hidden title="Remove your token from this browser">Sign out</button>
+      <div class="status"><b id="clock">--:--:--</b><span class="dot" id="liveDot"></span><span id="sync">CONNECTING</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+
+  <main id="view">
+    <section class="panel graph-panel" id="mapView">
+      <div class="ph"><span>Neural map</span><span id="graphInfo"></span></div>
+      <canvas id="graph"></canvas>
+      <div class="hint">click a circle to open it · click a memory to view it · Esc closes · dashed = mention</div>
+      <div class="gtools">
+        <button id="zIn" title="Zoom in" aria-label="Zoom in">+</button>
+        <button id="zOut" title="Zoom out" aria-label="Zoom out">−</button>
+        <button id="zFit" title="Fit" aria-label="Fit graph">⤢</button>
+      </div>
+    </section>
+    <section class="page" id="pageView" hidden></section>
+  </main>
+</div>
+
+<dialog id="editor" class="panel">
+  <form id="edForm" novalidate>
+    <div class="ph"><span id="edTitle">New memory</span><span>INPUT</span></div>
+    <div class="pb form">
+      <div class="two">
+        <label>Folder<select name="folder" id="edFolder">
+          <option value="areas">areas · projects &amp; goals</option>
+          <option value="people">people</option>
+          <option value="topics">topics</option>
+        </select></label>
+        <label>Name <small>file name</small><input name="slug" maxlength="60" placeholder="e.g. weekend-trips" pattern="[a-z0-9]+(-[a-z0-9]+)*"></label>
+      </div>
+      <label>Description <small>one line, used to decide relevance</small><input name="description" maxlength="300"></label>
+      <label>Aliases <small>comma separated</small><input name="aliases" placeholder="e.g. trips, getaways"></label>
+      <label>Facts <small>one per line · plain lines become “- [stated] …” · [[name]] links a memory</small><textarea name="body" rows="9" spellcheck="true"></textarea></label>
+      <p class="err" id="edErr" role="alert"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="edCancel">Cancel</button>
+        <button type="submit" class="btn primary">Save</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
